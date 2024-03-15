@@ -1,0 +1,152 @@
+#VRML_SIM R2023b utf8
+
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/objects/backgrounds/protos/TexturedBackground.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/objects/backgrounds/protos/TexturedBackgroundLight.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/objects/floors/protos/Floor.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/humans/pedestrian/protos/Pedestrian.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/appearances/protos/MattePaint.proto"
+
+WorldInfo {
+}
+Viewpoint {
+  orientation 0.011029956162549611 0.00919543770510799 -0.9998968866800535 1.4197007286675665
+  position -1.0895603686247468 5.102655125230281 1.0474534384633443
+}
+TexturedBackground {
+}
+TexturedBackgroundLight {
+}
+Floor {
+}
+Pedestrian {
+  translation -1.37 0 1.27
+}
+Solid {
+  translation 0.67 0 0.19
+  children [
+    Shape {
+      appearance PBRAppearance {
+      }
+      geometry DEF BALL_GEOMETRY Sphere {
+        radius 0.1
+      }
+    }
+  ]
+  boundingObject USE BALL_GEOMETRY
+  physics Physics {
+  }
+}
+Robot {
+  translation 0 0 0.25
+  children [
+    DEF ROBOT_BASE Solid {
+      children [
+        HingeJoint {
+          jointParameters HingeJointParameters {
+            axis 0 0 1
+            anchor -0.12 0 0.2
+          }
+          device [
+            PositionSensor {
+            }
+            RotationalMotor {
+            }
+          ]
+          endPoint Solid {
+            translation -0.12 0 0.2
+            rotation 0 1 0 4.6928012867022945e-06
+            children [
+              HingeJoint {
+                jointParameters HingeJointParameters {
+                  axis 0 1 0
+                  anchor 0 0 0.08
+                  minStop -0.52
+                  maxStop 0.52
+                }
+                device [
+                  RotationalMotor {
+                  }
+                  PositionSensor {
+                  }
+                ]
+                endPoint Solid {
+                  translation 0 0 0.08
+                  rotation 1 0 0 1.5708
+                  children [
+                    Solid {
+                      rotation 1 0 0 -1.5707953071795862
+                      children [
+                        RangeFinder {
+                          translation -0.035 0 0
+                        }
+                        Shape {
+                          appearance MattePaint {
+                            baseColor 0 0 0
+                          }
+                          geometry Box {
+                            size 0.07 0.18 0.04
+                          }
+                        }
+                      ]
+                      name "Depth_Camera"
+                    }
+                    Shape {
+                      appearance MattePaint {
+                        baseColor 0 0.666667 1
+                      }
+                      geometry Cylinder {
+                        height 0.2
+                        radius 0.03
+                      }
+                    }
+                  ]
+                  name "Gimbal_Joint_2"
+                }
+              }
+              Shape {
+                appearance MattePaint {
+                  baseColor 0.333333 1 1
+                }
+                geometry Cylinder {
+                  height 0.1
+                  radius 0.04
+                }
+              }
+            ]
+            name "Gimbal_Joint_1"
+          }
+        }
+        Shape {
+          appearance MattePaint {
+            baseColor 0.333333 0 1
+          }
+          geometry DEF BASE Box {
+            size 0.6 0.3 0.3
+          }
+        }
+      ]
+      name "Gimbal"
+      boundingObject USE BASE
+      physics Physics {
+      }
+    }
+    Solid {
+      translation 0 0 0.2
+      children [
+        Shape {
+          appearance Appearance {
+            material Material {
+              diffuseColor 1 0 0
+              emissiveColor 1 0 0
+              specularColor 1 0 0
+            }
+          }
+          geometry Box {
+            size 0.1 0.1 0.1
+          }
+        }
+      ]
+      name "solid(1)"
+    }
+  ]
+}
