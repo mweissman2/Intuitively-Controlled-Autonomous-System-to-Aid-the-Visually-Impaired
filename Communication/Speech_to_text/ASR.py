@@ -1,11 +1,9 @@
-import utils
+from Communication import utils
 import speech_recognition as sr
 from openai import OpenAI
 import queue
-from time import sleep
 import datetime
 import io
-import threading
 
 
 class AudioTranscriber:
