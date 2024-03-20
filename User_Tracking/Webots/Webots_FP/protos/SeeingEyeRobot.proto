@@ -1,76 +1,22 @@
 #VRML_SIM R2023b utf8
+# Ths is a proto for our robot for the final project
+# template language: javascript
 
-EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/objects/backgrounds/protos/TexturedBackground.proto"
-EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/objects/backgrounds/protos/TexturedBackgroundLight.proto"
-EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/objects/floors/protos/Floor.proto"
-IMPORTABLE EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/humans/pedestrian/protos/Pedestrian.proto"
-EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/appearances/protos/MattePaint.proto"
 
-WorldInfo {
-  contactProperties [
-    ContactProperties {
-      material1 "InteriorWheelMat"
-      coulombFriction [
-        0, 2, 0
-      ]
-      frictionRotation -0.785398 0
-      bounce 0
-      forceDependentSlip [
-        10, 0
-      ]
-      softCFM 0.0001
-    }
-    ContactProperties {
-      material1 "ExteriorWheelMat"
-      coulombFriction [
-        0, 2, 0
-      ]
-      frictionRotation 0.785398 0
-      bounce 0
-      forceDependentSlip [
-        10, 0
-      ]
-      softCFM 0.0001
-    }
-  ]
-}
-Viewpoint {
-  orientation -0.09614013120354908 0.9939739860552003 -0.05265729026166118 0.8675358836759083
-  position -3.0104078620863794 1.3668391426030244 2.7179015425088804
-}
-TexturedBackground {
-}
-TexturedBackgroundLight {
-}
-Floor {
-}
-Robot {
-  name "supervisor"
-  controller "<extern>"
-  supervisor TRUE
-}
-DEF USER Pedestrian {
-  translation -1.59933 -0.000335742 1.27
-  controller "<none>"
-}
-Solid {
-  translation 0.67 0 0.0934252748951154
-  children [
-    Shape {
-      appearance PBRAppearance {
-      }
-      geometry DEF BALL_GEOMETRY Sphere {
-        radius 0.1
-      }
-    }
-  ]
-  boundingObject USE BALL_GEOMETRY
-  physics Physics {
-  }
-}
-Robot {
-  translation -1.06664 1.04566 0.25
-  children [
+PROTO SeeingEyeRobot [
+  field SFVec3f translation 0 0 0
+  field SFRotation rotation 0 0 1 0
+  field SFFloat bodyMass 1
+  field SFString name "robot"
+  field SFString controller "<generic>"
+]
+{
+ Robot {
+   translation IS translation
+   rotation IS rotation
+   name IS name
+   controller IS controller
+    children [
     DEF ROBOT_BASE Solid {
       translation 0 0 -0.0016935350243008074
       children [
@@ -341,10 +287,14 @@ Robot {
       name "Gimbal"
       boundingObject USE BASE
       physics Physics {
+      density -1
+      mass IS bodyMass
       }
     }
   ]
-  physics Physics {
-  }
-  controller "<none>"
+  controller IS controller
 }
+}
+
+
+
