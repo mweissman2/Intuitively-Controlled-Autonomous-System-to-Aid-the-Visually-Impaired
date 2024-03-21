@@ -35,8 +35,8 @@ WorldInfo {
   ]
 }
 Viewpoint {
-  orientation -0.09614013120354908 0.9939739860552003 -0.05265729026166118 0.8675358836759083
-  position -3.0104078620863794 1.3668391426030244 2.7179015425088804
+  orientation 0.3716353759185264 0.2959502074364483 -0.8799435334634937 1.6643770749857034
+  position -1.942706564133452 14.063610689607213 12.13608313733321
 }
 TexturedBackground {
 }
@@ -44,14 +44,11 @@ TexturedBackgroundLight {
 }
 Floor {
 }
-Robot {
-  name "supervisor"
-  controller "<extern>"
-  supervisor TRUE
-}
 DEF USER Pedestrian {
-  translation -1.59933 -0.000335742 1.27
+  translation -2.13933 -0.850336 1.27
+  name "user"
   controller "<none>"
+  enableBoundingObject TRUE
 }
 Solid {
   translation 0.67 0 0.0934252748951154
@@ -144,8 +141,8 @@ Robot {
             }
           ]
           endPoint Solid {
-            translation 0.2 -0.2 -0.15
-            rotation 1 -1.0370632309154904e-11 1.0370807250451913e-11 1.5707996938995423
+            translation 0.19999999999999996 -0.19999999999999996 -0.15
+            rotation 1 -5.328422632786726e-10 5.328442655074185e-10 1.5707996938995135
             children [
               DEF Wheel Shape {
                 appearance MattePaint {
@@ -176,8 +173,8 @@ Robot {
             }
           ]
           endPoint Solid {
-            translation 0.2 0.2 -0.15
-            rotation 1 -1.0372312618623644e-11 1.0372170329234128e-11 1.5707996938995434
+            translation 0.19999999999999996 0.19999999999999996 -0.15
+            rotation 1 5.12102143333169e-10 -5.121043650739852e-10 1.5707996938995168
             children [
               USE Wheel
             ]
@@ -200,8 +197,8 @@ Robot {
             }
           ]
           endPoint Solid {
-            translation -0.2 -0.2 -0.15
-            rotation 1 -1.0371633799625908e-11 1.0371747160129742e-11 1.5707996938995388
+            translation -0.19999999999999996 -0.19999999999999996 -0.15
+            rotation 1 5.12105501524484e-10 -5.121071854577373e-10 1.570799693899515
             children [
               USE Wheel
             ]
@@ -224,8 +221,8 @@ Robot {
             }
           ]
           endPoint Solid {
-            translation -0.2 0.2 -0.15
-            rotation 1 -1.0372160841997104e-11 1.037223112421577e-11 1.5707996938995399
+            translation -0.19999999999999996 0.19999999999999996 -0.15
+            rotation 1 -5.328462285921017e-10 5.32847753401922e-10 1.5707996938995183
             children [
               USE Wheel
             ]
@@ -346,5 +343,11 @@ Robot {
   ]
   physics Physics {
   }
+  controller "<extern>"
+}
+Robot {
+  translation 0.1 0 0.1
+  name "supervisor1"
   controller "<none>"
+  supervisor TRUE
 }

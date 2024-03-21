@@ -3,6 +3,7 @@
 # You may need to import some classes of the controller module. Ex:
 #  from controller import Robot, Motor, DistanceSensor
 from controller import Robot
+import Gimbal_Controller as GC
 
 # create the Robot instance.
 robot = Robot()
@@ -35,10 +36,14 @@ for names in joint_names:
 gimbal_joints[0].setPosition(1.3)
 gimbal_joints[1].setPosition(0.4)  
 
+tracker = GC.Gimbal_Controller(rgb_camera, depth_camera, gimbal_joints,camera_timestep)
+tracker.enable_vision(True)
+print("Tracking started")
 # Main loop:
 # - perform simulation steps until Webots is stopping the controller
 while robot.step(timestep) != -1:
     # Read the sensors:
+    tracker.get_depth_image()
     # Enter here functions to read sensor data, like:
     #  val = ds.getValue()
 
