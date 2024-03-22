@@ -17,6 +17,8 @@ import controller       # do i need to pip install?
 # 4) rotate collision cone by adding each velocity in collision cone with obstacle velocity
 
 # 5) use APF to quickly plan around obstacle
+
+# for testing, we can just use webots omnipresent knowledge of obstacle positions
 class velocityObstacle():
     def __init__(self):
         self.obstacles = {}                 # dict of webots world obstacles, key = obstacle id, value = velocity vector
