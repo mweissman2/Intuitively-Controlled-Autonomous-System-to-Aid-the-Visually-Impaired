@@ -5,9 +5,10 @@ import queue
 import datetime
 import io
 
+test_q = queue.Queue()
 
 class AudioTranscriber:
-    def __init__(self):
+    def __init__(self, audio_q, text_q):
         # Setup OpenAI
         self.KEY = utils.get_key("OPENAI_API_KEY")
         self.client = OpenAI(api_key=self.KEY)
@@ -23,19 +24,28 @@ class AudioTranscriber:
         self.chunk_time = 2
         self.phrase_time = None
 
-        # Setup model and Queue
-        self.audio_in_queue = queue.Queue()
+        # Setup queues
+        self.audio_in_queue = audio_q
+        self.text_command_queue = text_q
 
         # Initialize transcription
         self.transcription = ['']
 
     def recorder_callback(self, _, audio):
+        """
+        Gets called anytime the background listener picks up audio
+        Adds audio to queue
+        :param audio: Speech Recognition audio object
+        """
         self.audio_in_queue.put(audio)
-        print(f"Queue size: {self.audio_in_queue.qsize()}")
+        print(f"Queue size: {self.audio_in_queue.qsize()}\n")
         if not self.audio_in_queue.empty():
             print(f"Newest Item: {self.audio_in_queue.queue[0]}")
 
     def audio_listener(self):
+        """
+        Starts a new thread for listening in background and calls transcriber in loop
+        """
         print("Listening...")
         # Start new background thread for listener
         self.recorder.listen_in_background(self.mic, self.recorder_callback, phrase_time_limit=2)
@@ -54,6 +64,10 @@ class AudioTranscriber:
             print(line)
 
     def transcriber(self):
+        """
+        Pop audio from queue and run Whisper API call to transcribe
+        Pushes new transcription to text command queue
+        """
         # Pull audio from queue
         audio_data = self.audio_in_queue.get(block=True, timeout=5)
 
@@ -73,6 +87,7 @@ class AudioTranscriber:
         print("Processing...")
         result = self.client.audio.transcriptions.create(
             model="whisper-1",
+            language="en",
             file=buffer,
             response_format="text",
         )
@@ -87,14 +102,12 @@ class AudioTranscriber:
 
         print(result)
 
+        # ***FIGURE OUT HOW TO PUSH TRANSCRIPTION TO TEXT COMMAND QUEUE
+
         # Consider including slight delay
         # sleep(0.25)
 
 
-def main():
-    audio_listener = AudioTranscriber()
-    audio_listener.audio_listener()
-
-
-if __name__ == "__main__":
-    main()
+# def main():
+    # audio_listener = AudioTranscriber(test_q)
+    # audio_listener.audio_listener()
