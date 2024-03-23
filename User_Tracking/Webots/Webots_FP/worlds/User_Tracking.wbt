@@ -35,8 +35,8 @@ WorldInfo {
   ]
 }
 Viewpoint {
-  orientation 0.3716353759185264 0.2959502074364483 -0.8799435334634937 1.6643770749857034
-  position -1.942706564133452 14.063610689607213 12.13608313733321
+  orientation 0.2756968637433008 0.19687812290080908 -0.9408667514824625 1.5983381779500856
+  position -1.4151518965832621 10.906006383307659 5.712389554543752
 }
 TexturedBackground {
 }
@@ -45,7 +45,7 @@ TexturedBackgroundLight {
 Floor {
 }
 DEF USER Pedestrian {
-  translation -2.13933 -0.850336 1.27
+  translation 0.76067 -0.850336 1.27
   name "user"
   controller "<none>"
   enableBoundingObject TRUE
@@ -65,7 +65,7 @@ Solid {
   physics Physics {
   }
 }
-Robot {
+DEF DOG Robot {
   translation -1.06664 1.04566 0.25
   children [
     DEF ROBOT_BASE Solid {
@@ -142,7 +142,7 @@ Robot {
           ]
           endPoint Solid {
             translation 0.19999999999999996 -0.19999999999999996 -0.15
-            rotation 1 -5.328422632786726e-10 5.328442655074185e-10 1.5707996938995135
+            rotation 1 -7.115210411036404e-10 7.115236072191825e-10 1.5707996938995001
             children [
               DEF Wheel Shape {
                 appearance MattePaint {
@@ -174,7 +174,7 @@ Robot {
           ]
           endPoint Solid {
             translation 0.19999999999999996 0.19999999999999996 -0.15
-            rotation 1 5.12102143333169e-10 -5.121043650739852e-10 1.5707996938995168
+            rotation 1 6.907823822076902e-10 -6.907850660799682e-10 1.5707996938995021
             children [
               USE Wheel
             ]
@@ -198,7 +198,7 @@ Robot {
           ]
           endPoint Solid {
             translation -0.19999999999999996 -0.19999999999999996 -0.15
-            rotation 1 5.12105501524484e-10 -5.121071854577373e-10 1.570799693899515
+            rotation 1 6.907851887432363e-10 -6.907874508072056e-10 1.570799693899499
             children [
               USE Wheel
             ]
@@ -222,7 +222,7 @@ Robot {
           ]
           endPoint Solid {
             translation -0.19999999999999996 0.19999999999999996 -0.15
-            rotation 1 -5.328462285921017e-10 5.32847753401922e-10 1.5707996938995183
+            rotation 1 -7.115250646121181e-10 7.115272037061626e-10 1.5707996938995092
             children [
               USE Wheel
             ]
@@ -277,17 +277,24 @@ Robot {
                           recognitionColors [
                             0 0 0
                           ]
+                          fieldOfView 1.518
+                          width 640
+                          height 480
+                          noise 0.01
                           recognition Recognition {
+                            segmentation TRUE
                           }
                         }
                         RangeFinder {
                           translation -0.035 0 0
                           rotation 0 0 1 3.141592653589793
                           name "range_finder"
+                          fieldOfView 1.52
                           width 640
                           height 480
-                          minRange 0.02
-                          maxRange 4
+                          minRange 0.06
+                          maxRange 6
+                          noise 0.05
                         }
                         Shape {
                           appearance MattePaint {
@@ -344,10 +351,11 @@ Robot {
   physics Physics {
   }
   controller "<extern>"
+  supervisor TRUE
 }
 Robot {
   translation 0.1 0 0.1
   name "supervisor1"
-  controller "<none>"
+  controller "supervisor_controller"
   supervisor TRUE
 }
