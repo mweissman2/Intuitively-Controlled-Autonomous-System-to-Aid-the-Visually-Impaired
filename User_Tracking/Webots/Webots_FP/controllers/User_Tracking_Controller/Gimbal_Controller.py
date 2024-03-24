@@ -97,26 +97,38 @@ class Gimbal_Controller:
         return 0
 
     def segment_image(self, image):
-        #image_c_ptr = self.rgb_camera.getRecognitionSegmentationImage()
-        #image_np = np.ctypeslib.as_array(image_c_ptr, (self.rgb_camera.getWidth() * self.rgb_camera.getHeight(),))
-        image_np = self.rgb_camera.getRecognitionSegmentationImageArray()
-        #plt.imshow(image)
-        #plt.show()
+        #remove infinity from array
+        image[image > 100] = 0
+        #img = np.frombuffer(self.rgb_camera.getImage(), dtype=np.uint8).reshape((self.rgb_camera.getHeight(), self.rgb_camera.getWidth(), 4))
+        img_seg = np.frombuffer(self.rgb_camera.getRecognitionSegmentationImage(), dtype=np.uint8).reshape((self.rgb_camera.getHeight(), self.rgb_camera.getWidth(), 4))
+        img_gray = cv.cvtColor(img_seg, cv.COLOR_BGRA2GRAY)
+        ret, img_mask = cv.threshold(img_gray,30, 255, cv.THRESH_BINARY)
+        #debug visualization
+        #cv.imshow("Segmented Image", img_mask)
         #cv.waitKey(0)
-        return image_np
+        masked_image = cv.bitwise_and(image, image, mask=img_mask)
+        #divide by 255 because of max value
+        pixel_count = np.sum(img_mask)/255
+
+        return masked_image, pixel_count
 
     def calculate_depth(self,depth_image):
         depth = -1
-        #get segmentation from RGB image
-        mask = self.segment_image(depth_image)
-        #get depth image
-        #apply mask to depth image
+        # get depth image
+        depth_image = self.get_depth_image()
+        #get segmentation from RGB image and apply max
+        masked_image, pixel_count = self.segment_image(depth_image)
+
+        #make into 1d array for easier processing
+        #determine how many indicies have a
+        flattened_image = masked_image.flatten()
+        depth = np.sum(flattened_image, where=flattened_image>0)/pixel_count
         #average together readings from depth image
         return depth
 
     def get_depth_image(self):
         image_c_ptr = self.depth_camera.getRangeImage(data_type="buffer")
-        image_np = np.ctypeslib.as_array(image_c_ptr, (self.depth_camera.getWidth() * self.depth_camera.getHeight(),))
+        image_np = np.ctypeslib.as_array(image_c_ptr, (self.depth_camera.getWidth() * self.depth_camera.getHeight(),)).reshape(self.depth_camera.getHeight(), self.depth_camera.getWidth(),1)
         return image_np
 
     #function for reading out the angle of the position sensor on the robot.
