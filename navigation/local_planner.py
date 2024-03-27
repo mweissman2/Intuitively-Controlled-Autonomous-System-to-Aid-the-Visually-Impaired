@@ -7,6 +7,8 @@ import math
 # A* integration with VO: https://www.sciencedirect.com/science/article/pii/S2092678224000050
 
 import controller       # do i need to pip install?
+import numpy as np
+import matplotlib.path as mplpath
 
 # steps
 
@@ -29,17 +31,35 @@ class velocityObstacle():
         # robot parameters
         self.robot_velocity = []            # pass in current robot velocity vector
         self.robot_pose = []
-        pass
+
+        # maybe a simple 2D test matrix to represent the world
+        self.test_world = np.zeros((80,80), dtype=int)
 
 
-    def collision_cone(self):
-        # calculate collision cone for incoming obstacles
-        # probably needs to be called at some high frequency
-
-        pass
 
     def pyth_distance(self,point_1,point_2):
         return math.sqrt((point_1[0]-point_2[0])**2+(point_1[1]-point_2[1])**2)
+
+    def collision_cone(self,local_occupy_map,robot_pos,t_1,t_2,velocity_of_obstacle,robo_velocity):
+        # calculate collision cone for incoming obstacles
+        # probably needs to be called at some high frequency
+        '''
+        local_occupy_map is the matrix that will contain the obstacles surrounding the robot
+        t_1 and t_2 are the tangent points connected to the
+        '''
+        t = 6           # this establishes 6 second future horizon window
+        new_t1 = [t_1[0] + velocity_of_obstacle[0]*t,t_1[1] + velocity_of_obstacle[1]*t]
+        new_t2 = [t_2[0] + velocity_of_obstacle[0]*t,t_2[1] + velocity_of_obstacle[1]*t]
+        new_apex_point = (robo_velocity - velocity_of_obstacle)*t+robot_pos      # the apex point of the obstacle would be vector shift of robot position by velocity of object minus distance covered from difference of obstacle and robot velocities.
+        cone_vertices = np.array([new_apex_point,new_t1,new_t2])
+
+        return cone_vertices
+
+
+        # this line is used to test if points are inside a triangle
+        # inside_triangle = path.contains_points(points)
+
+
 
     def tangent_calc(self,obstacle,robot_position):
         # https://math.stackexchange.com/questions/543496/how-to-find-the-equation-of-a-line-tangent-to-a-circle-that-passes-through-a-g
@@ -59,10 +79,12 @@ class velocityObstacle():
 
         else:
             # if distance to center of obstacle is less than radius, then obstacle space has been breached
-            # send emergency stop command
+            # send emergency stop command to robot
             pass
 
-    def vo_calculation(self,robot_velocity):
+
+
+    def vo_calculation(self,local_occupy_map,robot_pos,velocity_of_obstacle,robot_velocity):
         # calculate the velocity obstacle from obstacles
         for obstacle,velocity in self.obstacles:
             v_prime = robot_velocity - velocity            # obtain v prime vector, which velocity component from robot towards obstacle
@@ -71,7 +93,7 @@ class velocityObstacle():
             # find distance from point to obstacle center
                    # pass in robot and obstacle position
             t1, t2 = self.tangent_calc(obstacle, self.robot_pose)
-
+            cone_coordinates = self.collision_cone(local_occupy_map,robot_pos,t1,t2,velocity_of_obstacle,robot_velocity)
 
 
         # create
@@ -84,11 +106,6 @@ class velocityObstacle():
         # creating an inflated circle around obstacle is the easiest
         pass
 
-
-    def v_space(self):
-        # x_axis is velocity_x
-        # y_axis is velocity_y
-        pass
     def detect(self):
         # detect whether the robot will enter the velocity obstacle space
         pass
