@@ -27,7 +27,7 @@ class Gimbal_Controller:
         self.y_setpoint = float(self.cam_vertical_res/2)
 
         #saves state of last main direction to rotate that way if person is lost.
-        self.last_direction = -1 #positive 1 for positive rotation, -1 for negative rotation
+        self.last_direction = 1 #positive 1 for positive rotation, -1 for negative rotation
         self.user_in_frame = False
         self.center_error_margin = 0.06 #50 pixels?
 
@@ -35,6 +35,7 @@ class Gimbal_Controller:
         self.y_velocity_buffer = [0,0,0,0,0]
         self.velocity_buffer_index = 0
         self.prev_position = [-2,0]
+        self.next_position = [0,0]
 
         self.current_yaw_axis_angle = 0
         self.current_pitch_axis_angle = 0
@@ -71,7 +72,7 @@ class Gimbal_Controller:
             self.last_direction = -1
         #if within an error threshold for image centering, #then calculate depth and angle
         if np.abs(xn_setpoint-x_input) < self.center_error_margin:
-            self.get_user_location(good_frame)
+            user_location = self.get_user_location(good_frame)
 
 
     def get_user_location(self, good_frame):
@@ -159,8 +160,8 @@ class Gimbal_Controller:
         self.current_pitch_axis_angle = self.pitch_axis_motor.getPositionSensor().getValue()
 
     def calculate_user_position(self, depth, angle):
-        x_pos = depth*math.cos(angle)
-        y_pos = depth*math.sin(angle)
+        x_pos = depth*math.cos(angle+np.pi)
+        y_pos = depth*math.sin(angle++np.pi)
 
         return x_pos, y_pos
 
@@ -229,3 +230,8 @@ class Gimbal_Controller:
         d_error = kpid[2]*(error - last_error)
         output = p_error + i_error + d_error
         return output, error, error_sum
+
+    def run(self):
+        self.find_user()
+        return self.prev_position
+

@@ -4,7 +4,9 @@
 #  from controller import Robot, Motor, DistanceSensor
 from controller import Robot
 from controller import Supervisor
+from controller import Keyboard
 import Gimbal_Controller as GC
+import csv
 
 robot = Supervisor()
 #get ID of user for tracking.
@@ -13,31 +15,40 @@ user_id = user_node.getId()
 # create the Robot instance.
 #my_robot = robot.getFromDef('DOG')
 
+#logging data from file
+csv_file = open('User_Tracking_Data.csv', 'w', newline='')
+csv_writer = csv.writer(csv_file)
+header = ['Actual X Pos', 'Actual Y Pos', 'Timestep', 'Measured X Pos', 'Measured Y Pos', 'Timestep']
+csv_writer.writerow(header)
+
+#enable keboard for exiting program
+keyboard = Keyboard()
+keyboard.enable(100)
 
 
 # get the time step of the current world.
 timestep = int(robot.getBasicTimeStep())
-camera_timestep = 32
+camera_timestep = 32*3
 
-# You should insert a getDevice-like function in order to get the
-# instance of a device of the robot. Something like:
-#  motor = robot.getDevice('motorname')
-#  ds = robot.getDevice('dsname')
-#  ds.enable(timestep)
+
 rgb_camera = []
 depth_camera = []
 gimbal_joints = []
 
+#get sensors
 rgb_camera = (robot.getDevice('RGB_camera'))
 depth_camera = (robot.getDevice('range_finder'))
 rgb_camera.enable(camera_timestep)
 depth_camera.enable(camera_timestep)
 
-
+#get joint objects
 joint_names = ['gimbal_j1_motor', 'gimbal_j2_motor']
 for names in joint_names:
     gimbal_joints.append(robot.getDevice(names))
-    
+
+#get GPS for position tracking
+GPS = robot.getDevice('gps')
+GPS.enable(camera_timestep)
 
 
 tracker = GC.Gimbal_Controller(rgb_camera, depth_camera, gimbal_joints,camera_timestep)
@@ -51,16 +62,31 @@ i = 0
 while robot.step(timestep) != -1:
     # Read the sensors:
     if i == 3:
-        tracker.find_user()
+        measured_position = tracker.run()
+        #print(measured_position)
+        # log data
+        # get measured data
+        robot_location =GPS.getValues()
+        curr_time = str(robot.getTime())
+        meas_x_pos = str(measured_position[0]+robot_location[0])
+        meas_y_pos = str(measured_position[1]+robot_location[1])
+
+        #get position of user model
+        user_position = user_node.getPosition()
+        act_x_pos = str(user_position[0])
+        act_y_pos = str(user_position[1])
+
+        line = [act_x_pos,act_y_pos, curr_time, meas_x_pos, meas_y_pos, curr_time]
+        csv_writer.writerow(line)
+
         i = 0
     i += 1
-    # Enter here functions to read sensor data, like:
-    #  val = ds.getValue()
+    key = keyboard.getKey()
+    print(key)
+    if key==80: #letter p
+        break
 
-    # Process sensor data here.
-
-    # Enter here functions to send actuator commands, like:
-    #  motor.setPosition(10.0)
     pass
 
 # Enter here exit cleanup code.
+csv_file.close()
